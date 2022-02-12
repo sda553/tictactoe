@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.5.xsd">
+    <changeSet id="71c1c03e-986d-465b-8abe-a30c167bf4f8" author="testeduser">
+        <createTable tableName="states">
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор">
+                <constraints primaryKeyName="pk_states" primaryKey="true" nullable="false"/>
+            </column>
+            <column name="prev_state_id" type="BIGINT" remarks="Состояние прошлого хода">
+                <constraints foreignKeyName="fk_prev_states" references="states" nullable="true"/>
+            </column>
+            <column name="next_state_id" type="BIGINT" remarks="Состояние следующего хода">
+                <constraints foreignKeyName="fk_next_states" references="states" nullable="true"/>
+            </column>
+            <column name="state" type="INT" remarks="Состояние текущее"/>
+        </createTable>
+        <createTable tableName="players">
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор">
+                <constraints primaryKeyName="pk_player" primaryKey="true" nullable="false"/>
+            </column>
+            <column name="session_id" type="uuid" remarks="Идентификатор сессии"/>
+            <column name="game_id" type="BIGINT"/>
+        </createTable>
+        <createTable tableName="games">
+            <column autoIncrement="true" name="id" type="BIGINT" remarks="Уникальный идентификатор">
+                <constraints primaryKeyName="pk_games" primaryKey="true" nullable="false"/>
+            </column>
+            <column name="state_id" type="BIGINT" remarks="Текущее состояние партии">
+                <constraints foreignKeyName="fk_games_states" references="states" nullable="false"/>
+            </column>
+            <column name="winner" type="VARCHAR(25)"/>
+            <column name="player_id" type="BIGINT">
+                <constraints foreignKeyName="fk_games_players" references="players" nullable="false"/>
+            </column>
+            <column name="result" type="VARCHAR(25)"/>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="players" baseColumnNames="game_id" constraintName="fk_players_games" referencedTableName="games"
+                                 referencedColumnNames="id" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
